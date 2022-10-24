@@ -1,3 +1,13 @@
+/*引入tailwind*/
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*button, [type='button'], [type='reset'], [type='submit'] {*/
+/*  !*-webkit-appearance: button*!*/
+/*  background: none !important;*/
+/*}*/
+
 html,
 body {
   padding: 0;
@@ -24,3 +34,7 @@ a {
     background: black;
   }
 }
+
+/*button{*/
+/*  @apply bg-blue-500 text-white font-bold py-2 px-4 rounded;*/
+/*}*/
