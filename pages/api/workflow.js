@@ -28,7 +28,7 @@ async function addPost(req, res) {
     // connect to the database
     let { db } = await connectToDatabase();
     // add the post
-    await db.collection("posts").insertOne(JSON.parse(req.body));
+    await db.collection("workflow").insertOne(JSON.parse(req.body));
     // return a message
     return res.json({
       message: "Post added successfully",
@@ -50,7 +50,7 @@ async function getPosts(req, res) {
     let { db } = await connectToDatabase();
     // fetch the posts
     let posts = await db
-      .collection("posts")
+      .collection("workflow")
       .find({})
       .sort({ published: -1 })
       .toArray();
@@ -74,11 +74,11 @@ async function updatePost(req, res) {
     let { db } = await connectToDatabase();
 
     // update the published status of the post
-    await db.collection("posts").updateOne(
+    await db.collection("workflow").updateOne(
       {
-        _id: new ObjectId(req.body),
+        _id: new ObjectId(req.body.id),
       },
-      { $set: { published: true } }
+      { $set: { iList: req.body.list } }
     );
 
     // return a message
@@ -101,7 +101,7 @@ async function deletePost(req, res) {
     let { db } = await connectToDatabase();
 
     // Deleting the post
-    await db.collection("posts").deleteOne({
+    await db.collection("workflow").deleteOne({
       _id: new ObjectId(req.body),
     });
 
