@@ -737,13 +737,15 @@ export async function getServerSideProps(ctx, context) {
 
     // request posts from api
     let response = await fetch(
-      `${dev ? DEV_URL : PROD_URL}/api/posts?URL=${secret}`
+      `${dev ? DEV_URL : "https://jet-todo.vercel.app"}/api/posts?URL=${secret}`
     );
     // extract the data
     let data = await response.json();
 
     let response1 = await fetch(
-      `${dev ? DEV_URL : PROD_URL}/api/workflow?URL=${secret}`
+      `${
+        dev ? DEV_URL : "https://jet-todo.vercel.app"
+      }/api/workflow?URL=${secret}`
     );
     // extract the data
     let data1 = await response1.json();
