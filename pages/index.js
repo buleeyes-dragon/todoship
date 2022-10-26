@@ -737,14 +737,16 @@ export async function getServerSideProps(ctx, context) {
 
     // request posts from api
     let response = await fetch(
-      `${dev ? DEV_URL : "https://jet-todo.vercel.app"}/api/posts?URL=${secret}`
+      `${
+        dev ? DEV_URL : "https://todoship.netlify.app"
+      }/api/posts?URL=${secret}`
     );
     // extract the data
     let data = await response.json();
 
     let response1 = await fetch(
       `${
-        dev ? DEV_URL : "https://jet-todo.vercel.app"
+        dev ? DEV_URL : "https://todoship.netlify.app"
       }/api/workflow?URL=${secret}`
     );
     // extract the data
