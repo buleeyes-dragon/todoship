@@ -55,11 +55,21 @@ export default function Todo(props) {
   const yesterdayDate = yesterday.getDate();
   yesterday = `${yesterdayYear}-${yesterdayMonth}-${yesterdayDate}`;
   const [addok, setAddok] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [type, setType] = useState(1);
+  const [done, setDone] = useState(false);
+  const [date, setDate] = useState("2022-10-25");
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
   // 将 props 按照日期分类不同日期放入不同的数组
   const todoList = props.posts;
   console.log(props.posts);
   let todoListByDate = {};
-
+  if (!todoList) {
+    return <div>404</div>;
+  }
   if (todoList.length !== 0) {
     todoList.forEach((item) => {
       const date = item.date;
@@ -86,26 +96,18 @@ export default function Todo(props) {
     e.target.scrollLeft = scrollLeft + e.movementX;
   };
   // modal 的可见性
-  const [visible, setVisible] = useState(false);
+
   const handler = () => setVisible(true);
   const closeHandler = () => {
     setVisible(false);
     console.log("closed");
   };
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [type, setType] = useState(1);
-  const [done, setDone] = useState(false);
-  const [date, setDate] = useState("2022-10-25");
-  const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
+
   // 对时间date进行格式化，为年-月-日的形式
   const formatDate = (date) => {
     return format(date, "yyyy-MM-dd");
   };
-  if (!todoList) {
-    return <div>404</div>;
-  }
+
   const handlePost = async (e) => {
     // e.preventDefault();
     // console.log("handlePost");
