@@ -180,18 +180,15 @@ export default function Todo(props) {
           ))}
           {/* 当workListByDate无值，显示插图 */}
         </div>
-        {/* {Object.keys(workListByDate).length === 0 && (
+        {props.posts.length === 0 && (
           <div className="flex flex-col -ml-20 items-center justify-center w-full h-full">
             <img
-              src="https://jetzihan-img.oss-cn-beijing.aliyuncs.com/blog/jettodoqs.png"
+              src="https://jetzihan-img.oss-cn-beijing.aliyuncs.com/blog/jettodoqs2e.png"
               alt="empty"
-              className="w-96 h-96"
+              className="w-auto opacity-30 h-96"
             />
-            <Text b size={20} className="text-black dark:text-white">
-              {props.lang.todo.empty}
-            </Text>
           </div>
-        )} */}
+        )}
       </div>
 
       <Modal
@@ -215,7 +212,7 @@ export default function Todo(props) {
             size={18}
             style={{ color: colorMode === "light" ? "#000" : "#fff" }}
           >
-            添加新工作流
+            {props.lang.workflow.addNewFlow}
           </Text>
         </Modal.Header>
         <Modal.Body>
@@ -227,7 +224,7 @@ export default function Todo(props) {
                   size={17}
                   style={{ color: colorMode === "light" ? "#000" : "#fff" }}
                 >
-                  工作流标题如
+                  {props.lang.workflow.addTitle}
                 </Text>
                 <Input
                   label=""
@@ -237,7 +234,7 @@ export default function Todo(props) {
                   color="error"
                   // label="事件标题"
                   value={title}
-                  placeholder="如XX项目、XX课程"
+                  placeholder={props.lang.workflow.addNewFlowEx}
                   initialValue="title"
                   width="100%"
                   className="my-3 text-red-500"
@@ -251,7 +248,7 @@ export default function Todo(props) {
                   size={17}
                   style={{ color: colorMode === "light" ? "#000" : "#fff" }}
                 >
-                  工作流描述
+                  {props.lang.workflow.addContent}
                 </Text>
                 <Input
                   label=""
@@ -275,7 +272,7 @@ export default function Todo(props) {
 
               <div className="flex w-full gap-3">
                 <ReactiveButton
-                  idleText="添加"
+                  idleText={props.lang.buttons.add}
                   rounded
                   shadow
                   color="red"
@@ -288,7 +285,7 @@ export default function Todo(props) {
                 />
                 {/* <div className="w-3"></div> */}
                 <ReactiveButton
-                  idleText="取消"
+                  idleText={props.lang.buttons.cancel}
                   rounded
                   shadow
                   color="light"

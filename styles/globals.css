@@ -309,6 +309,10 @@ a {
   line-height: inherit;
 }
 
+.rdp-nav_button:hover {
+  color: white;
+}
+
 .rdp-dropdown[disabled] {
   opacity: unset;
   color: unset;

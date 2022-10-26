@@ -16,6 +16,7 @@ import {
   Input,
   Radio,
   Link,
+  User,
 } from "@nextui-org/react";
 import Test from "./Test";
 // 将 @nextui-org/react 中 Button 重命名为 Btn 引入
@@ -34,9 +35,16 @@ import Todo from "./Todo";
 import TodoCalendar from "./TodoCalendar";
 import ReactiveButton from "reactive-button";
 let color = colorMode.lightColor;
-export default function Home({ posts, workflow, state }) {
-  console.log("state", state);
+export default function Home({
+  posts,
+  workflow,
+  state,
+  colorModeCookie,
+  languageCookie,
+}) {
   let secret = cookie.load("secret");
+  // let colorModeCookie = cookie.load("colorModeCookie");
+
   let ifopen = true;
   // 如果没有secret，就跳转到登录页面
   if (!secret) {
@@ -57,15 +65,25 @@ export default function Home({ posts, workflow, state }) {
   // 创建状态用于记录当前的 active 的导航
   const [active, setActive] = useState(1);
   // 创建状态用于记录当前的颜色模式
-  const [colorMode, setColorMode] = useState("light");
+  console.log("colorModeCookie", colorModeCookie);
+  let md = colorModeCookie ? colorModeCookie : "light";
+  console.log("md", md);
+  const [colorMode, setColorMode] = useState(md);
+  console.log("colorMode", colorMode);
   // 设置的可见性
   const [settingVisible, setSettingVisible] = useState(false);
   // 语言
-  const [language, setLanguage] = useState(languages.English);
+  let lg = languageCookie === "zh" ? languages.Chinese : languages.English;
+  const [language, setLanguage] = useState(lg);
   // loginopen
   const [loginOpen, setLoginOpen] = useState(ifopen);
   // mongoUri
   const [mongoUri, setMongoUri] = useState("");
+  // sureVisible 确认是否要执行
+  const [sureVisible, setSureVisible] = useState(false);
+  const closesureHandler = () => {
+    setSureVisible(false);
+  };
   // 设置弹窗的可见性函数
   const handler = () => setSettingVisible(true);
   const closeHandler = () => {
@@ -78,6 +96,7 @@ export default function Home({ posts, workflow, state }) {
     cookie.save("secret", mongoUri, { path: "/" });
     // console.log("@@@@@@@@@@@@@@@@@@@@@" + a + mongoUri);
     setLoginOpen(false);
+    window.location.reload();
   };
   // 响应未连接状态
   if (state === "404") {
@@ -89,14 +108,114 @@ export default function Home({ posts, workflow, state }) {
           <link rel="icon" href="/favicon.ico" />
         </Head>
         <div>
-          <Text b>未连接到数据库，请检查网络连接或者配置数据库</Text>
+          <Modal
+            scroll
+            animated={false}
+            fullScreen
+            aria-labelledby="modal-title"
+            aria-describedby="modal-description"
+            open={loginOpen}
+            className="rounded-none
+          
+           bg-gradient-to-r from-red-100 via-blue-100  to-red-100  bg-opacity-40"
+          >
+            <Modal.Body
+              className="flex flex-col justify-center items-center w-full font-sans font-bold
+          
+          "
+            >
+              {/* 图片 */}
+              <img
+                src="https://jetzihan-img.oss-cn-beijing.aliyuncs.com/blog/tslogo-22.png"
+                className="h-10"
+                alt="Logo"
+              />
+              <Text
+                h1
+                size={60}
+                css={{
+                  textGradient: "45deg, $blue600 -20%, $red600 50%",
+                }}
+                className="logintext animate-pulse"
+                weight="bold"
+              >
+                Let Todoship
+              </Text>
+              <Text
+                h1
+                size={60}
+                css={{
+                  textGradient: "45deg, $red600 -20%, $yellow600 100%",
+                }}
+                className="logintext animate-pulse"
+                weight="bold"
+              >
+                Make Your Work
+              </Text>
+              <Text
+                h1
+                size={60}
+                css={{
+                  textGradient: "45deg, $yellow600 -20%, $red600 100%",
+                }}
+                className="logintext animate-pulse"
+                weight="bold"
+              >
+                More Efficient
+              </Text>
+              <Text
+                h1
+                size={60}
+                css={{
+                  textGradient: "45deg, $red600 -20%, $blue600 100%",
+                }}
+                className="logintext animate-pulse"
+                weight="bold"
+              >
+                And Enjoyable
+              </Text>
+              <Input
+                shadow
+                underlined
+                className="w-96"
+                labelPlaceholder="MongoDB URI"
+                status="error"
+                value={mongoUri}
+                onChange={(e) => setMongoUri(e.target.value)}
+              />
+              <div className="flex justify-center">
+                <Link
+                  css={{ fontSize: "9px" }}
+                  color="primary"
+                  href="https://github.com/inannan423/jet-todo"
+                >
+                  请参阅官方文档 | Please refer to the official documentation.
+                </Link>
+              </div>
+              <ReactiveButton
+                buttonState={loginstate}
+                onClick={setSecret}
+                color={"red"}
+                idleText={"Start"}
+                loadingText={<>Loading</>}
+                successText={<>Success</>}
+                errorText={<>Error</>}
+                rounded
+                outline={false}
+                shadow
+                size={"large"}
+                block={false}
+                messageDuration={2000}
+              />
+            </Modal.Body>
+          </Modal>
         </div>
       </div>
     );
   } else {
     return (
       <div
-        className={`h-screen flex font-mono font-semibold z-10  ${colorMode}`}
+        className={`h-screen flex font-mono font-semibold z-10  ${colorMode} bg-white dark:bg-gray-900`}
         // style={{fontFamily:language===languages.Chinese?"'Noto Serif SC', serif":""}}
       >
         <Head>
@@ -135,8 +254,15 @@ export default function Home({ posts, workflow, state }) {
           </Modal.Header>
           <Modal.Body>
             {/*<Text b size={18}>{language.setting.language}</Text>*/}
+            <Text
+              b
+              size={15}
+              style={{ color: colorMode === "light" ? "#000" : "#fff" }}
+            >
+              {language.setting.language}
+            </Text>
             <Radio.Group
-              label={language.setting.language}
+              // label={language.setting.language}
               orientation="horizontal"
               color="error"
               defaultValue={["buenos-aires"]}
@@ -145,8 +271,11 @@ export default function Home({ posts, workflow, state }) {
                 console.log(e);
                 if (e === "Chinese") {
                   setLanguage(languages.Chinese);
+                  // 写入cookie
+                  cookie.save("languageCookie", "zh", { path: "/" });
                 } else {
                   setLanguage(languages.English);
+                  cookie.save("languageCookie", "en", { path: "/" });
                 }
               }}
             >
@@ -167,6 +296,73 @@ export default function Home({ posts, workflow, state }) {
                 </Text>
               </Radio>
             </Radio.Group>
+            <Text
+              b
+              size={15}
+              style={{ color: colorMode === "light" ? "#000" : "#fff" }}
+            >
+              使用说明/Instruction
+            </Text>
+            <a
+              href="https://github.com/inannan423/jet-todo"
+              rel="noreferrer"
+              target={"_blank"}
+            >
+              <ReactiveButton
+                idleText="GitHub Repo"
+                color="red"
+                rounded
+                shadow
+                outline
+                size="normal"
+                width={120}
+              />
+            </a>{" "}
+            <Text
+              b
+              size={15}
+              style={{ color: colorMode === "light" ? "#000" : "#fff" }}
+            >
+              切换账号/Switch accounts
+            </Text>
+            <ReactiveButton
+              idleText="Exit"
+              color="light"
+              rounded
+              shadow
+              size="normal"
+              width={120}
+              onClick={() => {
+                setSureVisible(true);
+              }}
+            />
+            <Text
+              b
+              size={15}
+              style={{ color: colorMode === "light" ? "#000" : "#fff" }}
+            >
+              开发者/Developers
+            </Text>
+            <div className="w-full flex felx-col h-max">
+              <a
+                href="https://github.com/inannan423"
+                rel="noreferrer"
+                target={"_blank"}
+              >
+                <User
+                  src="https://jetzihan-img.oss-cn-beijing.aliyuncs.com/blog/20221026202323.png"
+                  name="Jetzihan"
+                  bordered
+                  css={{ color: colorMode === "light" ? "#000" : "#fff" }}
+                />
+              </a>
+            </div>
+            <Text
+              size={12}
+              style={{ color: colorMode === "light" ? "#000" : "#fff" }}
+            >
+              Please star this repo if you like it!😘Thanks for your support!
+            </Text>
           </Modal.Body>
           <Modal.Footer>
             <ReactiveButton
@@ -284,8 +480,10 @@ export default function Home({ posts, workflow, state }) {
                   onClick={() => {
                     if (colorMode === "light") {
                       setColorMode("dark");
+                      cookie.save("colorModeCookie", "dark", { path: "/" });
                     } else if (colorMode === "dark") {
                       setColorMode("light");
+                      cookie.save("colorModeCookie", "light", { path: "/" });
                     }
                   }}
                   className="ml-5 cursor-pointer transition ease-in-out duration-300 transform hover:opacity-50"
@@ -421,6 +619,75 @@ export default function Home({ posts, workflow, state }) {
             />
           </Modal.Body>
         </Modal>
+        {/* 确认执行的弹窗 */}
+        <Modal
+          closeButton
+          blur
+          scroll
+          aria-labelledby="modal-title"
+          open={sureVisible}
+          onClose={closesureHandler}
+          // 深浅色
+          style={{
+            backgroundColor: colorMode === "light" ? "#f5f5f5" : "#383838",
+          }}
+        >
+          <Modal.Header>
+            <Text
+              b
+              id="modal-title"
+              className="tracking-normal font-sans text-red-500"
+              size={18}
+            >
+              {language.warning}
+            </Text>
+          </Modal.Header>
+          <Modal.Body>
+            <div className="h-max scrollModal pb-2">
+              <form className="scrollModal">
+                <div className="m-1">
+                  <Text
+                    b
+                    size={17}
+                    style={{ color: colorMode === "light" ? "#000" : "#fff" }}
+                  >
+                    确认要退出登陆吗？退出登陆后你的记录不会被清除，但是请确保你能找回原有的
+                    MongoDB URI。 Are you sure you want to log out? After
+                    logging out, your records will not be cleared, but please
+                    make sure you can find the original MongoDB URI.
+                  </Text>
+                </div>
+              </form>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <div className="flex w-full gap-3">
+              <ReactiveButton
+                idleText={language.todo.itemText.detailDelete}
+                rounded
+                shadow
+                color="red"
+                // type="submit"
+                onClick={(e) => {
+                  // 清除所有cookie，并且刷新页面
+                  cookie.remove("secret");
+                  cookie.remove("mongoUri");
+                  cookie.remove("colorMode");
+                  cookie.remove("language");
+                  window.location.reload();
+                }}
+              />
+              {/* <div className="w-3"></div> */}
+              <ReactiveButton
+                idleText={language.todo.itemText.detailQuit}
+                rounded
+                shadow
+                color="light"
+                onClick={closesureHandler}
+              />
+            </div>
+          </Modal.Footer>
+        </Modal>
       </div>
     );
   }
@@ -431,11 +698,29 @@ export async function getServerSideProps(ctx, context) {
   const cookies = ctx.req.headers.cookie;
   console.log(cookies);
   // 正则表达式匹配获取 secret= 后面的值
+  // 正则表达式匹配获取 colorModeCookie= 后面的值
+
   let secret;
+  let colorModeCookie;
+  let languageCookie;
   if (cookies) {
-    secret = cookies.match(/secret=([^;]*)/)[1];
+    if (cookies.match(/secret=([^;]*)/)) {
+      secret = cookies.match(/secret=([^;]*)/)[1];
+    }
+    if (cookies.match(/colorModeCookie=([^;]*)/)) {
+      colorModeCookie = cookies.match(/colorModeCookie=([^;]*)/)[1];
+    } else {
+      colorModeCookie = "light";
+    }
+    if (cookies.match(/languageCookie=([^;]*)/)) {
+      languageCookie = cookies.match(/languageCookie=([^;]*)/)[1];
+    } else {
+      languageCookie = "en";
+    }
   }
-  console.log(secret);
+  // 正则表达式匹配获取 languageCookie= 后面的值
+
+  console.log(secret + " " + colorModeCookie);
 
   if (!secret) {
     return {
@@ -443,6 +728,7 @@ export async function getServerSideProps(ctx, context) {
         posts: [],
         workflow: [],
         state: "404",
+        // colorModeCookie: colorModeCookie,
       },
     };
   } else {
@@ -469,6 +755,7 @@ export async function getServerSideProps(ctx, context) {
           posts: [],
           workflow: [],
           state: "404",
+          // colorModeCookie: colorModeCookie,
         },
       };
     } else if (!data) {
@@ -482,6 +769,8 @@ export async function getServerSideProps(ctx, context) {
         posts: data["message"],
         workflow: data1["message"],
         state: state,
+        colorModeCookie: colorModeCookie,
+        languageCookie: languageCookie,
       },
     };
   }

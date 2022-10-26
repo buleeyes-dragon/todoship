@@ -175,7 +175,7 @@ export default function TodoItem(props) {
             // 字体颜色
             style={{ color: props.color === "light" ? "#000" : "#fff" }}
           >
-            Details
+            {props.lang.todo.itemText.detailHead}
           </Text>
         </Modal.Header>
         <Modal.Body>
@@ -185,7 +185,7 @@ export default function TodoItem(props) {
             // 字体颜色
             style={{ color: props.color === "light" ? "#000" : "#fff" }}
           >
-            标题：{props.title}
+            {props.lang.todo.itemText.detailTitle}：{props.title}
           </Text>
           <Text
             id="modal-title"
@@ -193,7 +193,7 @@ export default function TodoItem(props) {
             // 字体颜色
             style={{ color: props.color === "light" ? "#000" : "#fff" }}
           >
-            描述：{props.content}
+            {props.lang.todo.itemText.detailDesc}：{props.content}
           </Text>
           <Text
             id="modal-title"
@@ -201,7 +201,7 @@ export default function TodoItem(props) {
             // 字体颜色
             style={{ color: props.color === "light" ? "#000" : "#fff" }}
           >
-            截止时间：{props.time}
+            {props.lang.todo.itemText.detailDDL}：{props.time}
           </Text>
           <Text
             id="modal-title"
@@ -209,8 +209,12 @@ export default function TodoItem(props) {
             // 字体颜色
             style={{ color: props.color === "light" ? "#000" : "#fff" }}
           >
-            类型：
-            {props.type === 1 ? "生活" : props.type === 2 ? "工作" : "学习"}
+            {props.lang.todo.itemText.detailType}：
+            {props.type === 1
+              ? props.lang.todo.itemText.life
+              : props.type === 2
+              ? props.lang.todo.itemText.work
+              : props.lang.todo.itemText.study}
           </Text>
           <Text
             id="modal-title"
@@ -219,7 +223,7 @@ export default function TodoItem(props) {
             // 字体颜色
             style={{ color: props.color === "light" ? "#000" : "#fff" }}
           >
-            距离结束还有
+            {props.lang.todo.itemText.detailFromEnd}
             {props.time
               ? Math.floor(
                   (new Date(props.time).getTime() - new Date().getTime()) /
@@ -229,18 +233,18 @@ export default function TodoItem(props) {
                     24
                 )
               : 0}
-            天
+            {props.lang.todo.itemText.detailDay}
           </Text>
         </Modal.Body>
         <Modal.Footer>
           <ReactiveButton
-            idleText="Delete"
+            idleText={props.lang.todo.itemText.detailDelete}
             rounded
             color="red"
             onClick={() => handleDelete(props.id)}
           />
           <ReactiveButton
-            idleText="Cancel"
+            idleText={props.lang.todo.itemText.detailQuit}
             rounded
             color="light"
             onClick={() => setVisible(false)}

@@ -248,13 +248,13 @@ export default function WorkflowItem(props) {
         <Card.Footer className="-mt-2 !-mb-1 ">
           <Modal.Footer>
             <ReactiveButton
-              idleText="添加"
+              idleText={props.lang.buttons.add}
               color="red"
               outline
               onClick={openHandler}
             />
             <ReactiveButton
-              idleText="删除"
+              idleText={props.lang.buttons.delete}
               color="secondary"
               outline
               onClick={openrvHandler}
@@ -306,7 +306,7 @@ export default function WorkflowItem(props) {
             size={18}
             style={{ color: props.color === "light" ? "#000" : "#fff" }}
           >
-            添加事件
+            {props.lang.workflow.addThings}
           </Text>
         </Modal.Header>
         <Modal.Body>
@@ -318,7 +318,7 @@ export default function WorkflowItem(props) {
                   size={17}
                   style={{ color: props.color === "light" ? "#000" : "#fff" }}
                 >
-                  事件名
+                  {props.lang.workflow.title}
                 </Text>
                 <Input
                   label=""
@@ -328,7 +328,7 @@ export default function WorkflowItem(props) {
                   color="error"
                   // label="事件标题"
                   value={title}
-                  placeholder="如XX作业"
+                  placeholder={props.lang.workflow.addExample}
                   initialValue="title"
                   width="100%"
                   className="my-3 text-red-500"
@@ -342,7 +342,7 @@ export default function WorkflowItem(props) {
                   size={17}
                   style={{ color: props.color === "light" ? "#000" : "#fff" }}
                 >
-                  事件描述
+                  {props.lang.workflow.addContent}
                 </Text>
                 <Input
                   label=""
@@ -369,7 +369,7 @@ export default function WorkflowItem(props) {
                   size={17}
                   style={{ color: props.color === "light" ? "#000" : "#fff" }}
                 >
-                  截止日期
+                  {props.lang.workflow.addDDL}
                 </Text>
                 <DayPicker
                   mode="single"
@@ -380,7 +380,7 @@ export default function WorkflowItem(props) {
               </div>
               <div className="flex w-full gap-3">
                 <ReactiveButton
-                  idleText="添加"
+                  idleText={props.lang.buttons.add}
                   rounded
                   shadow
                   color="red"
@@ -391,7 +391,7 @@ export default function WorkflowItem(props) {
                 />
                 {/* <div className="w-3"></div> */}
                 <ReactiveButton
-                  idleText="取消"
+                  idleText={props.lang.buttons.cancel}
                   rounded
                   shadow
                   color="light"
@@ -426,7 +426,7 @@ export default function WorkflowItem(props) {
             className="tracking-normal font-sans text-red-500"
             size={18}
           >
-            确认删除?
+            {props.lang.warning}
           </Text>
         </Modal.Header>
         <Modal.Body>
@@ -438,7 +438,7 @@ export default function WorkflowItem(props) {
                   size={17}
                   style={{ color: props.color === "light" ? "#000" : "#fff" }}
                 >
-                  删除操作不可逆,请确认是否删除
+                  {props.lang.reallyDelete}
                 </Text>
               </div>
             </form>
@@ -447,7 +447,7 @@ export default function WorkflowItem(props) {
         <Modal.Footer>
           <div className="flex w-full gap-3">
             <ReactiveButton
-              idleText="删除"
+              idleText={props.lang.todo.itemText.detailDelete}
               rounded
               shadow
               color="red"
@@ -459,7 +459,7 @@ export default function WorkflowItem(props) {
             />
             {/* <div className="w-3"></div> */}
             <ReactiveButton
-              idleText="取消"
+              idleText={props.lang.todo.itemText.detailQuit}
               rounded
               shadow
               color="light"

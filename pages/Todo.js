@@ -282,9 +282,9 @@ export default function Todo(props) {
         {Object.keys(todoListByDate).length === 0 && (
           <div className="flex flex-col -ml-20 items-center justify-center w-full h-full">
             <img
-              src="https://jetzihan-img.oss-cn-beijing.aliyuncs.com/blog/jettodoqs.png"
+              src="https://jetzihan-img.oss-cn-beijing.aliyuncs.com/blog/jettodoqs12.png"
               alt="empty"
-              className="w-96 h-96"
+              className="w-auto opacity-30 h-96"
             />
             <Text b size={20} className="text-black dark:text-white">
               {props.lang.todo.empty}
@@ -314,7 +314,7 @@ export default function Todo(props) {
             size={18}
             style={{ color: colorMode === "light" ? "#000" : "#fff" }}
           >
-            添加新日程
+            {props.lang.todo.addNewTodo}
           </Text>
         </Modal.Header>
         <Modal.Body>
@@ -326,7 +326,7 @@ export default function Todo(props) {
                   size={17}
                   style={{ color: colorMode === "light" ? "#000" : "#fff" }}
                 >
-                  事件标题
+                  {props.lang.todo.itemText.detailTitle}
                 </Text>
                 <Input
                   label=""
@@ -350,7 +350,7 @@ export default function Todo(props) {
                   size={17}
                   style={{ color: colorMode === "light" ? "#000" : "#fff" }}
                 >
-                  事件描述
+                  {props.lang.todo.itemText.detailDesc}
                 </Text>
                 <Input
                   label=""
@@ -377,7 +377,7 @@ export default function Todo(props) {
                   size={17}
                   style={{ color: colorMode === "light" ? "#000" : "#fff" }}
                 >
-                  事件类型
+                  {props.lang.todo.itemText.detailType}
                 </Text>
                 <Radio.Group
                   className="my-3"
@@ -393,7 +393,7 @@ export default function Todo(props) {
                       size={13}
                       style={{ color: colorMode === "light" ? "#000" : "#fff" }}
                     >
-                      工作
+                      {props.lang.todo.itemText.work}
                     </Text>
                   </Radio>
                   <Radio value={1}>
@@ -402,7 +402,7 @@ export default function Todo(props) {
                       size={13}
                       style={{ color: colorMode === "light" ? "#000" : "#fff" }}
                     >
-                      生活
+                      {props.lang.todo.itemText.life}
                     </Text>
                   </Radio>
                   <Radio value={3}>
@@ -411,7 +411,7 @@ export default function Todo(props) {
                       // style={{ color: colorMode === "light" ? "#000" : "#fff" }}
                       size={13}
                     >
-                      学习
+                      {props.lang.todo.itemText.study}
                     </Text>
                   </Radio>
                 </Radio.Group>
@@ -422,7 +422,7 @@ export default function Todo(props) {
                   size={17}
                   style={{ color: colorMode === "light" ? "#000" : "#fff" }}
                 >
-                  截止日期
+                  {props.lang.todo.itemText.detailDDL}
                 </Text>
                 <DayPicker
                   mode="single"
@@ -441,14 +441,14 @@ export default function Todo(props) {
                   <Modal.Body>
                     {/* <TickSquare set="bulk" primaryColor="error" /> */}
                     <Text className="text-white font-sans font-bold">
-                      请不要选择今天之前的日期
+                      {props.lang.noBefore}
                     </Text>
                   </Modal.Body>
                 </Modal>
               )}
               <div className="flex w-full gap-3">
                 <ReactiveButton
-                  idleText="添加"
+                  idleText={props.lang.buttons.add}
                   rounded
                   shadow
                   color="red"
@@ -461,7 +461,7 @@ export default function Todo(props) {
                 />
                 {/* <div className="w-3"></div> */}
                 <ReactiveButton
-                  idleText="取消"
+                  idleText={props.lang.buttons.cancel}
                   rounded
                   shadow
                   color="light"
