@@ -59,6 +59,7 @@ export default function Todo(props) {
   const todoList = props.posts;
   console.log(props.posts);
   let todoListByDate = {};
+
   if (todoList.length !== 0) {
     todoList.forEach((item) => {
       const date = item.date;
@@ -102,7 +103,9 @@ export default function Todo(props) {
   const formatDate = (date) => {
     return format(date, "yyyy-MM-dd");
   };
-
+  if (!todoList) {
+    return <div>404</div>;
+  }
   const handlePost = async (e) => {
     // e.preventDefault();
     // console.log("handlePost");

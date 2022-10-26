@@ -69,7 +69,9 @@ export default function Todo(props) {
   const [content, setContent] = useState("");
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-
+  if (!props.lang) {
+    return <div>404</div>;
+  }
   const handlePost = async (e) => {
     setError("");
     setMessage("");
