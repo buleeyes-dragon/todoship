@@ -1,5 +1,13 @@
 // 导入 state
-import { Checkbox, Grid, Text, Tooltip, Card, Modal } from "@nextui-org/react";
+import {
+  Checkbox,
+  Grid,
+  Text,
+  Tooltip,
+  Card,
+  Modal,
+  Loading,
+} from "@nextui-org/react";
 import { Work, Buy, TicketStar, TickSquare, Game } from "react-iconly";
 import { useState } from "react";
 import { ObjectID } from "bson";
@@ -7,9 +15,10 @@ import { ObjectID } from "bson";
 import Confetti from "react-confetti";
 import ReactiveButton from "reactive-button";
 export default function TodoItem(props) {
-  console.log("!!!" + props.type);
+  console.log("!!!" + props.secret);
 
   const [message, setMessage] = useState("");
+
   const [error, setError] = useState("");
   const [convisible, setConvisible] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -31,7 +40,7 @@ export default function TodoItem(props) {
     id = ObjectID(id);
     console.log("handleDelete " + id);
     // delete the post
-    let response = await fetch(`/api/posts/`, {
+    let response = await fetch(`/api/posts/?${props.secret}`, {
       method: "DELETE",
       body: ObjectID(id),
     });
@@ -132,17 +141,22 @@ export default function TodoItem(props) {
           <Modal
             open={true}
             onClose={() => setMessage("")}
-            className="bg-red-500 bg-opacity-80"
+            className="bg-red-200 bg-opacity-80"
           >
+            <Modal.Header>
+              <Loading color="error" type="points" />
+            </Modal.Header>
             <Modal.Body>
               {/* <TickSquare set="bulk" primaryColor="error" /> */}
+
               <Text className="text-white font-sans font-bold">
-                恭喜! 操作成功
+                操作成功，努力刷新中...
               </Text>
             </Modal.Body>
           </Modal>
         </div>
       )}
+
       <Modal
         closeButton
         open={visible}

@@ -26,12 +26,12 @@ export default async function handler(req, res) {
 async function addPost(req, res) {
   try {
     // connect to the database
-    let { db } = await connectToDatabase();
+    let { db } = await connectToDatabase(req.query.URL);
     // add the post
     await db.collection("workflow").insertOne(JSON.parse(req.body));
     // return a message
     return res.json({
-      message: "Post added successfully",
+      message: "Add it! Refresh the page!",
       success: true,
     });
     console.log("addPost!");
@@ -47,7 +47,7 @@ async function addPost(req, res) {
 async function getPosts(req, res) {
   try {
     // connect to the database
-    let { db } = await connectToDatabase();
+    let { db } = await connectToDatabase(req.query.URL);
     // fetch the posts
     let posts = await db
       .collection("workflow")
@@ -71,19 +71,31 @@ async function getPosts(req, res) {
 async function updatePost(req, res) {
   try {
     // connect to the database
-    let { db } = await connectToDatabase();
-
+    let { db } = await connectToDatabase(req.query.URL);
+    console.log("updatePost");
+    console.log(typeof req.body);
+    let body = JSON.parse(req.body);
+    console.log(body);
     // update the published status of the post
-    await db.collection("workflow").updateOne(
+    let g = await db.collection("workflow").updateOne(
       {
-        _id: new ObjectId(req.body.id),
+        _id: new ObjectId(body.id),
       },
-      { $set: { iList: req.body.list } }
+      { $set: { iList: body.iList } }
     );
-
+    console.log(g);
+    console.log("updatePost Good!");
+    console.log(res.message);
+    let posts = await db
+      .collection("workflow")
+      .find({
+        _id: new ObjectId(body.id),
+      })
+      .toArray();
+    console.log(posts);
     // return a message
     return res.json({
-      message: "Post updated successfully",
+      message: "Add it! Refresh the page!",
       success: true,
     });
   } catch (error) {
@@ -98,7 +110,7 @@ async function updatePost(req, res) {
 async function deletePost(req, res) {
   try {
     // Connecting to the database
-    let { db } = await connectToDatabase();
+    let { db } = await connectToDatabase(req.query.URL);
 
     // Deleting the post
     await db.collection("workflow").deleteOne({
@@ -107,7 +119,7 @@ async function deletePost(req, res) {
 
     // returning a message
     return res.json({
-      message: "Post deleted successfully",
+      message: "Delete it! Refresh the page!",
       success: true,
     });
   } catch (error) {

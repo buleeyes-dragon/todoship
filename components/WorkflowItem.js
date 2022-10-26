@@ -7,6 +7,7 @@ import {
   Card,
   Modal,
   Input,
+  Loading,
 } from "@nextui-org/react";
 import {
   Work,
@@ -22,10 +23,11 @@ import { ObjectID } from "bson";
 import Confetti from "react-confetti";
 import ReactiveButton from "reactive-button";
 import { DayPicker } from "react-day-picker";
+import { format, set } from "date-fns";
 export default function WorkflowItem(props) {
+  console.log("!!!" + props.secret);
   let colorMode = props.colorMode;
-  let tempList = props.list;
-  console.log("!!!" + props.type);
+  let tempList = props.item.iList;
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [message, setMessage] = useState("");
@@ -34,6 +36,11 @@ export default function WorkflowItem(props) {
   const [convisible, setConvisible] = useState(false);
   const [visible, setVisible] = useState(false);
   const [visibleTwo, setVisibleTwo] = useState(false);
+  const [reallyVisible, setReallyVisible] = useState(false);
+  const openrvHandler = () => setReallyVisible(true);
+  const closervHandler = () => {
+    setReallyVisible(false);
+  };
   const openHandler = () => setVisibleTwo(true);
   const closeHandler = () => {
     setVisibleTwo(false);
@@ -42,38 +49,52 @@ export default function WorkflowItem(props) {
   const closeConvisible = () => {
     setConvisible(false);
   };
-  let itema = {
-    title: title,
-    content: content,
-    date: date,
-  };
+
+  // let itema = {
+  //   title: title,
+  //   content: content,
+  //   date: date,
+  // };
   // Modal 的显示与隐藏
   // update workflow中的iList字段，这条数据是一个对象，对象中有一个属性是 id，值是当前时间戳，第二个属性是 title ，第三个属性是 content
-  const handleUpdate = async (id, tempList) => {
+  const handleUpdate = async (_id, iList1) => {
     // reset error and message
     // 在数组 tempList 中加一条数据
-    tempList.push(itema);
-    console.log("handleUpdate " + tempList);
+    console.log("handleUpdate" + _id + "iList " + iList1);
+    // 生成8位随机字符串
+    let itemid = Math.random().toString(36).substr(2);
+
+    // 检验输入是否为空
+    if (!title || !date || !content) {
+      setMessage("All fields are required！ 所有字段都是必填的");
+      return;
+      // return setError("All fields are required！ 所有字段都是必填的");
+    }
+
+    let itema = {
+      title: title,
+      content: content,
+      date: date,
+      itemid: itemid,
+    };
+
+    iList1.push(itema);
     setError("");
     setMessage("");
-    id = ObjectID(id);
-    console.log("handleUpdate " + id);
     // update the post
-    let response = await fetch(`/api/workflow/`, {
-      method: "UPDATE",
-      body: {
-        id: ObjectID(id),
-        iList: tempList,
-      },
+    let response = await fetch(`/api/workflow?URL=${props.secret}`, {
+      method: "PUT",
+      body: JSON.stringify({ id: ObjectID(_id), iList: iList1 }),
     });
     // get the data
     let data = await response.json();
+    console.log(data);
     if (data.success) {
       // set the message
       setTimeout(() => {
         window.location.reload();
       }, 2000);
-      console.log("更新成功");
+      console.log("更新成功" + data);
       return setMessage(data.message);
     } else {
       // set the error
@@ -81,7 +102,48 @@ export default function WorkflowItem(props) {
       return setError(data.message);
     }
   };
+  // 删除 workflow 中的 iList 中的某一条数据
+  const handleDeleteItem = async (_id, iList1, itemid) => {
+    // reset error and message
+    // 在数组 tempList 中加一条数据
+    console.log("handleUpdate" + _id + "iList " + iList1);
+    // 在 iList1 中查找 itemid==itemid的数据并删除
+    for (let i = 0; i < iList1.length; i++) {
+      if (iList1[i].itemid == itemid) {
+        iList1.splice(i, 1);
+      }
+    }
+    console.log("#####");
+    console.log(iList1);
 
+    console.log("#####");
+    console.log(_id);
+    // iList1.push(itema);
+    console.log("handleUpdate " + iList1);
+    setError("");
+    setMessage("");
+    console.log("handleUpdate " + _id);
+    // update the post
+    let response = await fetch(`/api/workflow?URL=${props.secret}`, {
+      method: "PUT",
+      body: JSON.stringify({ id: ObjectID(_id), iList: iList1 }),
+    });
+    // get the data
+    let data = await response.json();
+    console.log(data);
+    if (data.success) {
+      // set the message
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+      console.log("更新成功" + data);
+      return setMessage(data.message);
+    } else {
+      // set the error
+      console.log("更新失败" + data.message);
+      return setError(data.message);
+    }
+  };
   // 删除事件
   const handleDelete = async (id) => {
     // reset error and message
@@ -90,11 +152,11 @@ export default function WorkflowItem(props) {
     id = ObjectID(id);
     console.log("handleDelete " + id);
     // delete the post
-    let response = await fetch(`/api/workflow/`, {
+    let response = await fetch(`/api/workflow?URL=${props.secret}`, {
       method: "DELETE",
       body: ObjectID(id),
     });
-    // get the data
+    // get the datao
     let data = await response.json();
     if (data.success) {
       // set the message
@@ -116,31 +178,87 @@ export default function WorkflowItem(props) {
         <Confetti tweenDuration={12000} width={3000} height={3000} />
       )}
       <Card
-        isPressable
+        // isPressable
         variant="bordered"
         borderWeight="normal"
         className="border-red-500 bg-white dark:bg-gray-700 w-max h-min shadow-none"
       >
         <Card.Header>
           {/* 如果类型为1，就渲染生活图标，为2渲染工作，为3渲染学习 */}
-
-          <div className="flex justify-center items-center gap-1 w-full divide-y divide-y-reverse divide-red-500">
-            <Activity set="bulk" primaryColor="red" />
-            <Text className="text-black dark:text-white font-sans font-bold w-full ">
-              {props.item.title}
-            </Text>
+          <div className="w-full">
+            <div className="flex justify-center items-center gap-1 w-full divide-y divide-y-reverse divide-red-500">
+              <Activity set="bulk" primaryColor="red" />
+              <Text className="text-black dark:text-white font-sans font-bold w-full ">
+                {props.item.title}
+              </Text>
+            </div>
+            {/* <Text className="text-black dark:text-white text-sm pl-6 font-sans font-thin w-full ">
+              {props.item.content}
+            </Text> */}
           </div>
         </Card.Header>
-        <Card.Body></Card.Body>
+        <Card.Body>
+          {
+            // 列表渲染 prop.item.iList数组
+            props.item.iList.map((item) => (
+              <Grid.Container
+                key={item.CreateAt}
+                className="flex justify-between"
+                css={{ pl: "$2" }}
+              >
+                <Checkbox
+                  lineThrough={true}
+                  defaultSelected={false}
+                  labelColor="error"
+                  color="error"
+                  label=""
+                  // 点击删除这条帖子
+                  // onChange={() => handleDelete(props.id)}
+                  onFocusChange={openConvisible}
+                  className="text-xs  "
+                  // 绑定参数
+                  onChange={() =>
+                    handleDeleteItem(
+                      props.item._id,
+                      props.item.iList,
+                      item.itemid
+                    )
+                  }
+                >
+                  <div>
+                    <Text
+                      // 规定最多显示字数
+                      css={{ overflow: "hidden", textOverflow: "ellipsis" }}
+                      className="text-black w-32 dark:text-white font-sans font-semibold flex-1"
+                    >
+                      {item.title}
+                    </Text>
+                  </div>
+                </Checkbox>
+                <div>
+                  <Text className="text-black float-right dark:text-white font-sans flex-1 font-thin">
+                    {/* 格式化时间并显示 */}
+                    {format(new Date(item.date), "yyyy-MM-dd")}
+                  </Text>
+                </div>
+              </Grid.Container>
+            ))
+          }
+        </Card.Body>
         <Card.Footer className="-mt-2 !-mb-1 ">
           <Modal.Footer>
             <ReactiveButton
               idleText="添加"
               color="red"
               outline
-              onClick={handleUpdate}
+              onClick={openHandler}
             />
-            <ReactiveButton idleText="删除" color="secondary" outline />
+            <ReactiveButton
+              idleText="删除"
+              color="secondary"
+              outline
+              onClick={openrvHandler}
+            />
           </Modal.Footer>
         </Card.Footer>
       </Card>
@@ -148,14 +266,20 @@ export default function WorkflowItem(props) {
       {message && (
         <div>
           <Modal
+            closeButton
             open={true}
+            blur
             onClose={() => setMessage("")}
-            className="bg-red-500 bg-opacity-80"
+            // className="bg-red-200 bg-opacity-80"
           >
+            <Modal.Header>
+              <Loading color="error" type="points" />
+            </Modal.Header>
             <Modal.Body>
               {/* <TickSquare set="bulk" primaryColor="error" /> */}
-              <Text className="text-white font-sans font-bold">
-                恭喜! 操作成功
+
+              <Text className="text-black dark:text-white font-sans font-bold">
+                {message}
               </Text>
             </Modal.Body>
           </Modal>
@@ -243,7 +367,7 @@ export default function WorkflowItem(props) {
                 <Text
                   b
                   size={17}
-                  style={{ color: colorMode === "light" ? "#000" : "#fff" }}
+                  style={{ color: props.color === "light" ? "#000" : "#fff" }}
                 >
                   截止日期
                 </Text>
@@ -261,7 +385,9 @@ export default function WorkflowItem(props) {
                   shadow
                   color="red"
                   // type="submit"
-                  onClick={handleUpdate}
+                  onClick={(e) => {
+                    handleUpdate(props.item._id, props.item.iList);
+                  }}
                 />
                 {/* <div className="w-3"></div> */}
                 <ReactiveButton
@@ -269,7 +395,7 @@ export default function WorkflowItem(props) {
                   rounded
                   shadow
                   color="light"
-                  onClick={setVisibleTwo}
+                  onClick={closeHandler}
                 />
               </div>
             </form>
@@ -278,6 +404,68 @@ export default function WorkflowItem(props) {
         <Modal.Footer>
           {/* 添加成功和失败的提醒 */}
           {message && <div className="text-red-500 text-center">{message}</div>}
+        </Modal.Footer>
+      </Modal>
+      {/* 确认删除弹窗 */}
+      <Modal
+        closeButton
+        blur
+        scroll
+        aria-labelledby="modal-title"
+        open={reallyVisible}
+        onClose={closervHandler}
+        // 深浅色
+        style={{
+          backgroundColor: props.color === "light" ? "#f5f5f5" : "#383838",
+        }}
+      >
+        <Modal.Header>
+          <Text
+            b
+            id="modal-title"
+            className="tracking-normal font-sans text-red-500"
+            size={18}
+          >
+            确认删除?
+          </Text>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="h-max scrollModal pb-2">
+            <form className="scrollModal">
+              <div className="m-1">
+                <Text
+                  b
+                  size={17}
+                  style={{ color: props.color === "light" ? "#000" : "#fff" }}
+                >
+                  删除操作不可逆,请确认是否删除
+                </Text>
+              </div>
+            </form>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <div className="flex w-full gap-3">
+            <ReactiveButton
+              idleText="删除"
+              rounded
+              shadow
+              color="red"
+              // type="submit"
+              onClick={(e) => {
+                setMessage("删除成功");
+                handleDelete(props.item._id, props.item.iList);
+              }}
+            />
+            {/* <div className="w-3"></div> */}
+            <ReactiveButton
+              idleText="取消"
+              rounded
+              shadow
+              color="light"
+              onClick={closervHandler}
+            />
+          </div>
         </Modal.Footer>
       </Modal>
     </div>

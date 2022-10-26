@@ -1,4 +1,5 @@
 import Head from "next/head";
+Checkbox;
 // 导入 state
 import { useState } from "react";
 import Image from "next/image";
@@ -17,6 +18,7 @@ import {
   Modal,
   Input,
   Radio,
+  Loading,
 } from "@nextui-org/react";
 import {
   Document,
@@ -52,12 +54,12 @@ export default function Todo(props) {
   const yesterdayMonth = yesterday.getMonth() + 1;
   const yesterdayDate = yesterday.getDate();
   yesterday = `${yesterdayYear}-${yesterdayMonth}-${yesterdayDate}`;
-
+  const [addok, setAddok] = useState(false);
   // 将 props 按照日期分类不同日期放入不同的数组
   const todoList = props.posts;
-  console.log(props);
+  console.log(props.posts);
   let todoListByDate = {};
-  if (todoList) {
+  if (todoList.length !== 0) {
     todoList.forEach((item) => {
       const date = item.date;
       if (todoListByDate[date]) {
@@ -120,8 +122,11 @@ export default function Todo(props) {
       "title" + title + "content" + content + "type" + type + "date" + date
     );
     // fields check
-    if (!title || !type || !date || !content)
+    if (!title || !type || !date || !content) {
+      setMessage("All fields are required！ 所有字段都是必填的");
       return setError("All fields are required");
+    }
+
     date = formatDate(date);
     // post structure
     let post = {
@@ -134,11 +139,11 @@ export default function Todo(props) {
       createdAt: new Date().toISOString(),
     };
     // save the post
-    let response = await fetch("/api/posts", {
+    let response = await fetch(`/api/posts?${props.secret}`, {
       method: "POST",
       body: JSON.stringify(post),
     });
-    console.log("response", response);
+
     // get the data
     let data = await response.json();
     console.log(data);
@@ -179,77 +184,8 @@ export default function Todo(props) {
     }
   };
 
-  // 随机表情
-  const randomEmoji = () => {
-    const emojiList = [
-      "😁",
-      "🎉",
-      "🎈",
-      "🎁",
-      "🎀",
-      "🎊",
-      "🎂",
-      "🎅",
-      "🎄",
-      "🎆",
-      "🎇",
-      "🎉",
-      "🎈",
-      "🎏",
-      "🎐",
-      "🎑",
-      "🎒",
-      "🎓",
-      "🎠",
-      "🎡",
-      "🎢",
-      "🎣",
-      "🎤",
-      "🎥",
-      "🎦",
-      "🎧",
-      "🎨",
-      "🎩",
-      "🎪",
-      "🎫",
-      "🎬",
-      "🎭",
-      "🎮",
-      "🎯",
-      "🎰",
-      "🎱",
-      "🎲",
-      "🎳",
-      "🎴",
-      "🎵",
-      "🎶",
-      "🎷",
-      "🎸",
-      "🎹",
-      "🎺",
-      "🎻",
-      "🎼",
-      "🎽",
-      "🎾",
-      "🎿",
-      "🏀",
-      "🏁",
-      "🏂",
-      "🏃",
-      "🏄",
-      "🏆",
-      "🏈",
-      "🏊",
-      "🏠",
-      "🏡",
-      "🏮",
-      "🏯",
-      "🏰",
-    ];
-    return emojiList[Math.floor(Math.random() * emojiList.length)];
-  };
   return (
-    <div className="bg-gray-100 dark:bg-gray-900 z-10 bg-transparent  pt-2 h-screen w-full">
+    <div className="bg-white dark:bg-gray-900 z-10 bg-transparent  pt-2 h-screen w-full">
       {/*显示时间，在一行显示*/}
       <div className="flex justify-between items-center h-1/5 pl-3">
         <div>
@@ -325,6 +261,7 @@ export default function Todo(props) {
                     {todoListByDate[key].map((item, index) => {
                       return (
                         <TodoItem
+                          secret={props.secret}
                           key={index}
                           title={item.title}
                           content={item.content}
@@ -516,7 +453,11 @@ export default function Todo(props) {
                   shadow
                   color="red"
                   // type="submit"
-                  onClick={handlePost}
+                  onClick={() => {
+                    handlePost();
+                    // setAddok
+                    // setAddok(true);
+                  }}
                 />
                 {/* <div className="w-3"></div> */}
                 <ReactiveButton
@@ -535,6 +476,26 @@ export default function Todo(props) {
           {message && <div className="text-red-500 text-center">{message}</div>}
         </Modal.Footer>
       </Modal>
+      {addok && (
+        <div>
+          <Modal
+            open={true}
+            onClose={() => setMessage("")}
+            className="bg-red-200 bg-opacity-80"
+          >
+            <Modal.Header>
+              <Loading color="error" type="points" />
+            </Modal.Header>
+            <Modal.Body>
+              {/* <TickSquare set="bulk" primaryColor="error" /> */}
+
+              <Text className="text-white font-sans font-bold">
+                添加成功，努力刷新中...
+              </Text>
+            </Modal.Body>
+          </Modal>
+        </div>
+      )}
     </div>
   );
 }

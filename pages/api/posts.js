@@ -26,7 +26,7 @@ export default async function handler(req, res) {
 async function addPost(req, res) {
   try {
     // connect to the database
-    let { db } = await connectToDatabase();
+    let { db } = await connectToDatabase(req.query.URL);
     // add the post
     await db.collection("posts").insertOne(JSON.parse(req.body));
     // return a message
@@ -46,8 +46,9 @@ async function addPost(req, res) {
 
 async function getPosts(req, res) {
   try {
+    console.log(req.query.URL);
     // connect to the database
-    let { db } = await connectToDatabase();
+    let { db } = await connectToDatabase(req.query.URL);
     // fetch the posts
     let posts = await db
       .collection("posts")
@@ -71,7 +72,7 @@ async function getPosts(req, res) {
 async function updatePost(req, res) {
   try {
     // connect to the database
-    let { db } = await connectToDatabase();
+    let { db } = await connectToDatabase(req.query.URL);
 
     // update the published status of the post
     await db.collection("posts").updateOne(
@@ -98,7 +99,7 @@ async function updatePost(req, res) {
 async function deletePost(req, res) {
   try {
     // Connecting to the database
-    let { db } = await connectToDatabase();
+    let { db } = await connectToDatabase(req.query.URL);
 
     // Deleting the post
     await db.collection("posts").deleteOne({

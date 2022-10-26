@@ -17,6 +17,7 @@ import {
   Modal,
   Input,
   Radio,
+  Loading,
 } from "@nextui-org/react";
 import {
   Document,
@@ -42,12 +43,16 @@ export default function Todo(props) {
   const day = today.getDay();
   // 状态 showAlert
   const [showAlert, setShowAlert] = useState(false);
+  // setAddok
+  const [addok, setAddok] = useState(false);
+  const [showError, setShowError] = useState(false);
   console.log(props);
   let colorMode = props.color;
 
   // 将 props 按照日期分类不同日期放入不同的数组
   const workList = props.posts;
-  console.log(props);
+  console.log("####################");
+  console.log(props.posts);
   // 当鼠标在id为scroolView上按住左键移动鼠标，实现横向滚动
   const scroll = (e) => {
     const scrollLeft = e.target.scrollLeft;
@@ -66,15 +71,15 @@ export default function Todo(props) {
   const [message, setMessage] = useState("");
 
   const handlePost = async (e) => {
-    // e.preventDefault();
-    // console.log("handlePost");
-    // reset error and message
     setError("");
     setMessage("");
     let iList = [];
     console.log("title" + title + "content" + content);
     // fields check
-    if (!title || !content) return setError("All fields are required");
+    if (!title || !content) {
+      setMessage("All fields are required！ 所有字段都是必填的");
+      return setError("All fields are required");
+    }
     let post = {
       title,
       content,
@@ -83,7 +88,7 @@ export default function Todo(props) {
       createdAt: new Date().toISOString(),
     };
     // save the post
-    let response = await fetch("/api/workflow", {
+    let response = await fetch(`/api/workflow?URL=${props.secret}`, {
       method: "POST",
       body: JSON.stringify(post),
     });
@@ -94,9 +99,9 @@ export default function Todo(props) {
     if (data.success) {
       // reset the fields
       setTitle("");
-      setContent("");
-      closeHandler();
+      setContent("添加成功！Success!");
       window.location.reload();
+      closeHandler();
       return setMessage(data.message);
     } else {
       // set the error
@@ -105,7 +110,7 @@ export default function Todo(props) {
   };
 
   return (
-    <div className="bg-gray-100 dark:bg-gray-900 z-10 bg-transparent  pt-2 h-screen w-full">
+    <div className="bg-white dark:bg-gray-900 z-10 bg-transparent  pt-2 h-screen w-full">
       {/*显示时间，在一行显示*/}
       <div className="flex justify-between items-center h-1/5 pl-3">
         <div>
@@ -134,7 +139,9 @@ export default function Todo(props) {
                 <Plus set="bulk" primaryColor="white" /> {props.lang.todo.add}
               </div>
             }
-            onClick={handler}
+            onClick={() => {
+              handler();
+            }}
             shadow
           />
         </div>
@@ -142,28 +149,29 @@ export default function Todo(props) {
       {/* 固定宽度的横向scroll视图 */}
       <div
         id="scroolView"
-        // 响应鼠标左键按下事件
-        // onMouseDown={(e) => {
-        //   // 禁止默认事件
-        //   e.preventDefault();
-        //   e.target.addEventListener("mousemove", scroll);
-        //   // 鼠标变成手掌
-        //   e.target.style.cursor = "grab";
-        // }}
-        // // 响应鼠标左键松开事件
-        // onMouseUp={(e) => {
-        //   e.target.removeEventListener("mousemove", scroll);
-        //   console.log(e);
-        //   // 鼠标变成默认
-        //   e.target.style.cursor = "default";
-        // }}
+        响应鼠标左键按下事件
+        onMouseDown={(e) => {
+          // 禁止默认事件
+          // e.preventDefault();
+          e.target.addEventListener("mousemove", scroll);
+          // 鼠标变成手掌
+          e.target.style.cursor = "grab";
+        }}
+        // 响应鼠标左键松开事件
+        onMouseUp={(e) => {
+          e.target.removeEventListener("mousemove", scroll);
+          console.log(e);
+          // 鼠标变成默认
+          e.target.style.cursor = "default";
+        }}
         className="flex overflow-x-auto w-full h-4/5 pr-30 hscroll py-3 bg-transparent"
       >
         {/* 一共5列，每列w-96，不弹性变化，每行一个 */}
         <div className="flex items-start h-min min-w-max gap-x-3 pr-12 pl-3">
           {/* 按列并排渲染 WorkflowItem */}
-          {workList.map((item) => (
+          {props.posts.map((item) => (
             <WorkflowItem
+              secret={props.secret}
               key={item._id}
               item={item}
               color={colorMode}
@@ -272,7 +280,11 @@ export default function Todo(props) {
                   shadow
                   color="red"
                   // type="submit"
-                  onClick={handlePost}
+                  onClick={() => {
+                    handlePost();
+                    // addok
+                    // setAddok(true);
+                  }}
                 />
                 {/* <div className="w-3"></div> */}
                 <ReactiveButton
@@ -291,6 +303,56 @@ export default function Todo(props) {
           {message && <div className="text-red-500 text-center">{message}</div>}
         </Modal.Footer>
       </Modal>
+      {addok && (
+        <div>
+          <Modal
+            open={true}
+            onClose={() => setMessage("")}
+            className="bg-red-200 bg-opacity-80"
+          >
+            <Modal.Header>
+              <Loading color="error" type="points" />
+            </Modal.Header>
+            <Modal.Body>
+              {/* <TickSquare set="bulk" primaryColor="error" /> */}
+
+              <Text className="text-white font-sans font-bold">
+                添加成功，努力刷新中...
+              </Text>
+            </Modal.Body>
+          </Modal>
+        </div>
+      )}
+      {error && (
+        <div>
+          <Modal
+            closeButton
+            open={showError}
+            onClose={() => setMessage("")}
+            // className="bg-red-200 bg-opacity-80"
+          >
+            <Modal.Header>
+              <Loading color="error" type="points" />
+            </Modal.Header>
+            <Modal.Body>
+              {/* <TickSquare set="bulk" primaryColor="error" /> */}
+
+              <Text className="text-white font-sans font-bold">
+                请填写完整信息
+              </Text>
+            </Modal.Body>
+            <Modal.Footer>
+              <ReactiveButton
+                idleText="确定"
+                rounded
+                shadow
+                color="light"
+                onClick={() => setShowError(false)}
+              />
+            </Modal.Footer>
+          </Modal>
+        </div>
+      )}
     </div>
   );
 }
