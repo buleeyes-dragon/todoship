@@ -38,7 +38,6 @@ import TodoItem from "../components/TodoItem";
 export default function Todo(props) {
   // 状态 showAlert
   const [showAlert, setShowAlert] = useState(false);
-  console.log(props);
   let colorMode = props.color;
   // 获取今天的日期和星期
   const today = new Date();
@@ -65,7 +64,6 @@ export default function Todo(props) {
   const [message, setMessage] = useState("");
   // 将 props 按照日期分类不同日期放入不同的数组
   const todoList = props.posts;
-  console.log(props.posts);
   let todoListByDate = {};
   if (!todoList) {
     return <div>404</div>;
@@ -88,8 +86,6 @@ export default function Todo(props) {
       todoListByDateSorted[key] = todoListByDate[key];
     });
   todoListByDate = todoListByDateSorted;
-  console.log("@@@");
-  console.log(Object.keys(todoListByDate).length);
   // 当鼠标在id为scroolView上按住左键移动鼠标，实现横向滚动
   const scroll = (e) => {
     const scrollLeft = e.target.scrollLeft;
@@ -100,7 +96,6 @@ export default function Todo(props) {
   const handler = () => setVisible(true);
   const closeHandler = () => {
     setVisible(false);
-    console.log("closed");
   };
 
   // 对时间date进行格式化，为年-月-日的形式
@@ -109,12 +104,8 @@ export default function Todo(props) {
   };
 
   const handlePost = async (e) => {
-    // e.preventDefault();
-    // console.log("handlePost");
-    // reset error and message
     setError("");
     setMessage("");
-    console.log(new Date(date), new Date());
     // 如果时间早于昨天，提示错误
     if (new Date(date) < new Date(yesterday)) {
       setShowAlert(true);
@@ -123,9 +114,6 @@ export default function Todo(props) {
       }, 1000);
       return;
     }
-    console.log(
-      "title" + title + "content" + content + "type" + type + "date" + date
-    );
     // fields check
     if (!title || !type || !date || !content) {
       setMessage("All fields are required！ 所有字段都是必填的");
@@ -151,7 +139,6 @@ export default function Todo(props) {
 
     // get the data
     let data = await response.json();
-    console.log(data);
     if (data.success) {
       // reset the fields
       setTitle("");
@@ -238,7 +225,6 @@ export default function Todo(props) {
         // 响应鼠标左键松开事件
         onMouseUp={(e) => {
           e.target.removeEventListener("mousemove", scroll);
-          console.log(e);
           // 鼠标变成默认
           e.target.style.cursor = "default";
         }}
@@ -372,7 +358,6 @@ export default function Todo(props) {
                   style={{ color: "rgb(239, 68, 68)" }}
                   onChange={(e) => {
                     setContent(e.target.value);
-                    console.log(e.target.value);
                   }}
                 />
               </div>

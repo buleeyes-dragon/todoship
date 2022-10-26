@@ -25,7 +25,6 @@ import ReactiveButton from "reactive-button";
 import { DayPicker } from "react-day-picker";
 import { format, set } from "date-fns";
 export default function WorkflowItem(props) {
-  console.log("!!!" + props.secret);
   let colorMode = props.colorMode;
   let tempList = props.item.iList;
   const [title, setTitle] = useState("");
@@ -60,7 +59,6 @@ export default function WorkflowItem(props) {
   const handleUpdate = async (_id, iList1) => {
     // reset error and message
     // 在数组 tempList 中加一条数据
-    console.log("handleUpdate" + _id + "iList " + iList1);
     // 生成8位随机字符串
     let itemid = Math.random().toString(36).substr(2);
 
@@ -88,17 +86,15 @@ export default function WorkflowItem(props) {
     });
     // get the data
     let data = await response.json();
-    console.log(data);
     if (data.success) {
       // set the message
       setTimeout(() => {
         window.location.reload();
       }, 2000);
-      console.log("更新成功" + data);
+
       return setMessage(data.message);
     } else {
       // set the error
-      console.log("更新失败" + data.message);
       return setError(data.message);
     }
   };
@@ -106,14 +102,13 @@ export default function WorkflowItem(props) {
   const handleDeleteItem = async (_id, iList1, itemid) => {
     // reset error and message
     // 在数组 tempList 中加一条数据
-    console.log("handleUpdate" + _id + "iList " + iList1);
+
     // 在 iList1 中查找 itemid==itemid的数据并删除
     for (let i = 0; i < iList1.length; i++) {
       if (iList1[i].itemid == itemid) {
         iList1.splice(i, 1);
       }
     }
-    console.log("#####");
     console.log(iList1);
 
     console.log("#####");

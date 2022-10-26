@@ -2,7 +2,6 @@ const { connectToDatabase } = require("../../lib/mongodb");
 const ObjectId = require("mongodb").ObjectId;
 
 export default async function handler(req, res) {
-  // console.log("handler");
   // switch the methods
   switch (req.method) {
     case "GET": {
@@ -34,7 +33,6 @@ async function addPost(req, res) {
       message: "Post added successfully",
       success: true,
     });
-    console.log("addPost!");
   } catch (error) {
     // return an error
     return res.json({
@@ -46,7 +44,6 @@ async function addPost(req, res) {
 
 async function getPosts(req, res) {
   try {
-    console.log(req.query.URL);
     // connect to the database
     let { db } = await connectToDatabase(req.query.URL);
     // fetch the posts

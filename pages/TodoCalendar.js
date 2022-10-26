@@ -46,13 +46,10 @@ export default function Todo(props) {
   // setAddok
   const [addok, setAddok] = useState(false);
   const [showError, setShowError] = useState(false);
-  console.log(props);
   let colorMode = props.color;
 
   // 将 props 按照日期分类不同日期放入不同的数组
   const workList = props.posts;
-  console.log("####################");
-  console.log(props.posts);
   // 当鼠标在id为scroolView上按住左键移动鼠标，实现横向滚动
   const scroll = (e) => {
     const scrollLeft = e.target.scrollLeft;
@@ -63,7 +60,6 @@ export default function Todo(props) {
   const handler = () => setVisible(true);
   const closeHandler = () => {
     setVisible(false);
-    console.log("closed");
   };
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -76,7 +72,6 @@ export default function Todo(props) {
     setError("");
     setMessage("");
     let iList = [];
-    console.log("title" + title + "content" + content);
     // fields check
     if (!title || !content) {
       setMessage("All fields are required！ 所有字段都是必填的");
@@ -94,10 +89,8 @@ export default function Todo(props) {
       method: "POST",
       body: JSON.stringify(post),
     });
-    console.log("response", response);
     // get the data
     let data = await response.json();
-    console.log(data);
     if (data.success) {
       // reset the fields
       setTitle("");
@@ -162,7 +155,6 @@ export default function Todo(props) {
         // 响应鼠标左键松开事件
         onMouseUp={(e) => {
           e.target.removeEventListener("mousemove", scroll);
-          console.log(e);
           // 鼠标变成默认
           e.target.style.cursor = "default";
         }}
@@ -267,7 +259,6 @@ export default function Todo(props) {
                   style={{ color: "rgb(239, 68, 68)" }}
                   onChange={(e) => {
                     setContent(e.target.value);
-                    console.log(e.target.value);
                   }}
                 />
               </div>
