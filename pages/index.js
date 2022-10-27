@@ -190,7 +190,7 @@ export default function Home({
                 <Link
                   css={{ fontSize: "9px" }}
                   color="primary"
-                  href="https://github.com/inannan423/jet-todo"
+                  href="https://github.com/inannan423/todoship"
                 >
                   请参阅官方文档 | Please refer to the official documentation.
                 </Link>
@@ -654,7 +654,7 @@ export default function Home({
               <Link
                 css={{ fontSize: "5px" }}
                 color="primary"
-                href="https://github.com/inannan423/jet-todo"
+                href="https://github.com/inannan423/todoship"
               >
                 请参阅官方文档 | Please refer to the official documentation.
               </Link>
