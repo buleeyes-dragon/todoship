@@ -109,15 +109,8 @@ export default function WorkflowItem(props) {
         iList1.splice(i, 1);
       }
     }
-    console.log(iList1);
-
-    console.log("#####");
-    console.log(_id);
-    // iList1.push(itema);
-    console.log("handleUpdate " + iList1);
     setError("");
     setMessage("");
-    console.log("handleUpdate " + _id);
     // update the post
     let response = await fetch(`/api/workflow?URL=${props.secret}`, {
       method: "PUT",
@@ -125,17 +118,14 @@ export default function WorkflowItem(props) {
     });
     // get the data
     let data = await response.json();
-    console.log(data);
     if (data.success) {
       // set the message
       setTimeout(() => {
         window.location.reload();
       }, 2000);
-      console.log("更新成功" + data);
       return setMessage(data.message);
     } else {
       // set the error
-      console.log("更新失败" + data.message);
       return setError(data.message);
     }
   };
@@ -145,7 +135,6 @@ export default function WorkflowItem(props) {
     setError("");
     setMessage("");
     id = ObjectID(id);
-    console.log("handleDelete " + id);
     // delete the post
     let response = await fetch(`/api/workflow?URL=${props.secret}`, {
       method: "DELETE",
@@ -158,11 +147,10 @@ export default function WorkflowItem(props) {
       setTimeout(() => {
         window.location.reload();
       }, 2000);
-      console.log("删除成功");
+
       return setMessage(data.message);
     } else {
       // set the error
-      console.log("删除失败" + data.message);
       return setError(data.message);
     }
   };
@@ -197,7 +185,7 @@ export default function WorkflowItem(props) {
             // 列表渲染 prop.item.iList数组
             props.item.iList.map((item) => (
               <Grid.Container
-                key={item.CreateAt}
+                key={item.itemid}
                 className="flex justify-between"
                 css={{ pl: "$2" }}
               >
@@ -354,7 +342,6 @@ export default function WorkflowItem(props) {
                   style={{ color: "rgb(239, 68, 68)" }}
                   onChange={(e) => {
                     setContent(e.target.value);
-                    console.log(e.target.value);
                   }}
                 />
               </div>

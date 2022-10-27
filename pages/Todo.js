@@ -175,7 +175,7 @@ export default function Todo(props) {
       }
     }
   };
-
+  console.log("🎉Todoship by jetzihan!v1.0.0");
   return (
     <div className="bg-white dark:bg-gray-900 z-10 bg-transparent  pt-2 h-screen w-full">
       {/*显示时间，在一行显示*/}

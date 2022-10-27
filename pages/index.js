@@ -1,3 +1,7 @@
+/**
+ * MY_SITE 部署后的网址
+ */
+const MY_SITE = "https://todoship.netlify.app";
 import Head from "next/head";
 // 导入 state
 import { useState } from "react";
@@ -41,19 +45,23 @@ export default function Home({
   state,
   colorModeCookie,
   languageCookie,
+  data_state,
 }) {
   let secret = cookie.load("secret");
   // let colorModeCookie = cookie.load("colorModeCookie");
 
   let ifopen = true;
   // 如果没有secret，就跳转到登录页面
-  if (!secret) {
+  if (!secret || data_state.success === false) {
     ifopen = true;
   } else {
     ifopen = false;
   }
-  // console.log("state", state);
-  console.log(workflow);
+  let ifwarning = false;
+
+  if (data_state.success === false) {
+    ifwarning = true;
+  }
   const [loginstate, setLoginState] = useState("idle");
 
   const onClickHandler = () => {
@@ -65,11 +73,8 @@ export default function Home({
   // 创建状态用于记录当前的 active 的导航
   const [active, setActive] = useState(1);
   // 创建状态用于记录当前的颜色模式
-  console.log("colorModeCookie", colorModeCookie);
   let md = colorModeCookie ? colorModeCookie : "light";
-  console.log("md", md);
   const [colorMode, setColorMode] = useState(md);
-  console.log("colorMode", colorMode);
   // 设置的可见性
   const [settingVisible, setSettingVisible] = useState(false);
   // 语言
@@ -88,18 +93,16 @@ export default function Home({
   const handler = () => setSettingVisible(true);
   const closeHandler = () => {
     setSettingVisible(false);
-    console.log("closed");
   };
   const setSecret = (e) => {
     // localStorage.setItem("secret", mongoUri);
     // let a = localStorage.getItem("secret");
     cookie.save("secret", mongoUri, { path: "/" });
-    // console.log("@@@@@@@@@@@@@@@@@@@@@" + a + mongoUri);
     setLoginOpen(false);
     window.location.reload();
   };
   // 响应未连接状态
-  if (state === "404") {
+  if (state === "404" || data_state.success === false) {
     return (
       <div className={styles.container}>
         <Head>
@@ -209,6 +212,53 @@ export default function Home({
               />
             </Modal.Body>
           </Modal>
+          <Modal
+            scroll
+            animated={false}
+            fullScreen
+            aria-labelledby="modal-title"
+            aria-describedby="modal-description"
+            open={ifwarning}
+            closeButton
+            className="rounded-none
+            
+           bg-gradient-to-r from-red-100 via-blue-100  to-red-100  bg-opacity-40"
+          >
+            <Modal.Body
+              className="flex flex-col justify-center items-center w-full font-sans font-bold
+          
+          "
+            >
+              {/* 图片 */}
+              <img
+                src="https://jetzihan-img.oss-cn-beijing.aliyuncs.com/blog/todoship_404.png"
+                className="h-60"
+                alt="Logo"
+              />
+              <Text b size={15}>
+                无法连接到数据库，请检查你的MongoURI是否正确。 Can not connect
+                to the database, please check whether your MongoURI is correct.
+              </Text>
+              <ReactiveButton
+                buttonState={loginstate}
+                onClick={() => {
+                  ifwarning = false;
+                  // 清除cookie
+                  cookie.remove("secret", { path: "/" });
+                  window.location.reload();
+                }}
+                color={"red"}
+                idleText={"Try Again"}
+                loadingText={<>Loading</>}
+                successText={<>Success</>}
+                errorText={<>Error</>}
+                rounded
+                outline={false}
+                shadow
+                size={"large"}
+              />
+            </Modal.Body>
+          </Modal>
         </div>
       </div>
     );
@@ -268,7 +318,6 @@ export default function Home({
               defaultValue={["buenos-aires"]}
               // 根据值的不同改变语言
               onChange={(e) => {
-                console.log(e);
                 if (e === "Chinese") {
                   setLanguage(languages.Chinese);
                   // 写入cookie
@@ -362,6 +411,14 @@ export default function Home({
               style={{ color: colorMode === "light" ? "#000" : "#fff" }}
             >
               Please star this repo if you like it!😘Thanks for your support!
+            </Text>
+            <Text
+              size={12}
+              style={{ color: colorMode === "light" ? "#000" : "#fff" }}
+            >
+              如果登陆成功但是无法显示数据，请检查你的MongoURI是否正确。并点击切换账号重新登陆。
+              if login successfully but can not show data, please check your
+              MongoURI and click switch accounts to login again.
             </Text>
           </Modal.Body>
           <Modal.Footer>
@@ -672,8 +729,8 @@ export default function Home({
                   // 清除所有cookie，并且刷新页面
                   cookie.remove("secret");
                   cookie.remove("mongoUri");
-                  cookie.remove("colorMode");
-                  cookie.remove("language");
+                  cookie.remove("colorModeCookie");
+                  cookie.remove("languageCookie");
                   window.location.reload();
                 }}
               />
@@ -696,7 +753,6 @@ export default function Home({
 export async function getServerSideProps(ctx, context) {
   // get the current environment
   const cookies = ctx.req.headers.cookie;
-  console.log(cookies);
   // 正则表达式匹配获取 secret= 后面的值
   // 正则表达式匹配获取 colorModeCookie= 后面的值
 
@@ -719,12 +775,16 @@ export async function getServerSideProps(ctx, context) {
     }
   }
   // 正则表达式匹配获取 languageCookie= 后面的值
-
-  console.log(secret + " " + colorModeCookie);
-
   if (!secret) {
+    let d_state;
+
+    d_state = {
+      success: true,
+    };
+
     return {
       props: {
+        data_state: d_state,
         posts: [],
         workflow: [],
         state: "404",
@@ -737,25 +797,24 @@ export async function getServerSideProps(ctx, context) {
 
     // request posts from api
     let response = await fetch(
-      `${
-        dev ? DEV_URL : "https://todoship.netlify.app"
-      }/api/posts?URL=${secret}`
+      `${dev ? DEV_URL : MY_SITE}/api/posts?URL=${secret}`
     );
     // extract the data
     let data = await response.json();
-
     let response1 = await fetch(
-      `${
-        dev ? DEV_URL : "https://todoship.netlify.app"
-      }/api/workflow?URL=${secret}`
+      `${dev ? DEV_URL : MY_SITE}/api/workflow?URL=${secret}`
     );
     // extract the data
     let data1 = await response1.json();
     let state;
     // 如果网络未连接// 如果无法连接，返回 404
-    if (response.status === 404) {
+    if (response.status === 404 || response1.status === 404) {
+      let d_state = {
+        success: false,
+      };
       return {
         props: {
+          data_state: d_state,
           posts: [],
           workflow: [],
           state: "404",
@@ -767,9 +826,17 @@ export async function getServerSideProps(ctx, context) {
     } else {
       state = "200";
     }
-
+    // let d_state;
+    // if (!data.success) {
+    //   d_state = {
+    //     success: true,
+    //   };
+    // } else {
+    //   d_state = data;
+    // }
     return {
       props: {
+        data_state: data,
         posts: data["message"],
         workflow: data1["message"],
         state: state,

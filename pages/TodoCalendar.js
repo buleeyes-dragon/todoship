@@ -144,7 +144,6 @@ export default function Todo(props) {
       {/* 固定宽度的横向scroll视图 */}
       <div
         id="scroolView"
-        响应鼠标左键按下事件
         onMouseDown={(e) => {
           // 禁止默认事件
           // e.preventDefault();

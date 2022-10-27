@@ -15,8 +15,6 @@ import { ObjectID } from "bson";
 import Confetti from "react-confetti";
 import ReactiveButton from "reactive-button";
 export default function TodoItem(props) {
-  console.log("!!!" + props.secret);
-
   const [message, setMessage] = useState("");
 
   const [error, setError] = useState("");
@@ -38,7 +36,6 @@ export default function TodoItem(props) {
     setError("");
     setMessage("");
     id = ObjectID(id);
-    console.log("handleDelete " + id);
     // delete the post
     let response = await fetch(`/api/posts/?${props.secret}`, {
       method: "DELETE",
@@ -51,11 +48,9 @@ export default function TodoItem(props) {
       setTimeout(() => {
         window.location.reload();
       }, 2000);
-      console.log("删除成功");
       return setMessage(data.message);
     } else {
       // set the error
-      console.log("删除失败" + data.message);
       return setError(data.message);
     }
   };
@@ -72,7 +67,6 @@ export default function TodoItem(props) {
         className="border-red-500 bg-white dark:bg-gray-700 w-64 h-min shadow-none"
         // 点击打开Modal
         onPress={() => {
-          console.log("打开Modal");
           openHandler();
         }}
       >
