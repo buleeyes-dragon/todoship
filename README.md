@@ -8,6 +8,8 @@
   </a>
 </p>
 
+> 如果你喜欢这个项目，请在左上角给我一个 Star ！  
+
 ## 介绍
 
 Todoship是一个基于 [Next.js](https://nextjs.org/) 和 [MongoDB](https://www.mongodb.com/) 的轻量级任务管理应用，支持多日程和工作流功能，可以帮助你更好地管理你的任务。  
